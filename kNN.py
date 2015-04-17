@@ -3,11 +3,6 @@
 
 from numpy import *  # 导入科学计算模块
 import operator # 导入运算符模块
-
-def createDataSet():
-	group = array( [[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
-	labels = ['A','A','B','B']
-	return group, labels
 	
 def classify0 ( inX, dataSet, labels, k ) :
 	# 计算新向量和每一个训练样本之间的欧氏距离
@@ -26,6 +21,63 @@ def classify0 ( inX, dataSet, labels, k ) :
 		key = operator.itemgetter(1), reverse =True )
 	return sortedClassCount[0][0]
 	 
+'''
+def createDataSet():
+	group = array( [[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
+	labels = ['A','A','B','B']
+	return group, labels
+	
+group, labels = createDataSet() #创建训练集 
+a = classify0( [0,0], group , labels, 3)
+print a
+'''
 
-	 
-	 
+# 从文本中解析数据
+def file2matrix( filename):
+	fr = open(filename)
+	arrayOfLines = fr.readlines()
+	numberOfLines = len( arrayOfLines ) # nrow
+	returnMat = zeros(( numberOfLines, 7 )) # 生成一个空矩阵
+	classLabelVector = [] 
+	index = 0
+	for line in arrayOfLines:
+		line = line.strip() # 去掉所有回车
+		listFromLine = line.split(',') # 每行分隔符
+		returnMat[ index, :] = listFromLine[ 0: 7 ] # 
+		classLabelVector.append( int(listFromLine[-1])) # 最后1列为Y
+		index += 1
+	return returnMat, classLabelVector
+
+# 归一化数据
+def autoNorm(dataSet):
+	minVals = dataSet.min(0)
+	maxVals = dataSet.max(0)
+	ranges = maxVals - minVals
+	normDataSet = zeros(shape(dataSet))
+	m = dataSet.shape[0]
+	normDataSet = dataSet - tile(minVals, (m,1))
+	normDataSet = normDataSet/tile( ranges, (m,1))
+	return normDataSet, ranges, minVals
+
+# 归一回头再说！！！
+datingDataMat, datingLabels = file2matrix( 'C:/Users/dingchong/Documents/GitHub/learnPy/train.csv')
+
+import pandas as pd
+data = pd.DataFrame(datingDataMat)
+
+pred = classify0( datingDataMat, datingDataMat , datingLabels, 3) 
+
+import matplotlib.pyplot as plt
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter( datingDataMat[:,3], datingDataMat[:,4], 15*array(datingLabels), 15*array(datingLabels))
+plt.show()
+
+
+
+
+
+
+
+
+
